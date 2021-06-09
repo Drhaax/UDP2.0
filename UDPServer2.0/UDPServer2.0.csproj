@@ -6,4 +6,8 @@
     <RootNamespace>UDPServer2._0</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GameDevWare.Serialization" Version="2.4.3" />
+  </ItemGroup>
+
 </Project>

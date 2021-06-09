@@ -11,15 +11,28 @@ namespace UDPServer2._0
 	public class CHUDPClient
 	{
         private IPEndPoint remoteEP;
-		Socket client;
+		Socket socket;
 		int bufferSize = 1024;
+
 		public CHUDPClient()
 		{
-            
-            remoteEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 11000);
-
-			client = new Socket(AddressFamily.InterNetwork,
+			socket = new Socket(AddressFamily.InterNetwork,
                 SocketType.Dgram, ProtocolType.Udp);
+        }
+
+		public void Server(string address, int port)
+        {
+			remoteEP = new IPEndPoint(IPAddress.Any, 0);
+            socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ReuseAddress, true);
+            socket.Bind(new IPEndPoint(IPAddress.Parse(address), port));
+            StartReceiving();            
+        }
+
+        public void Client(string address, int port)
+        {
+			remoteEP = new IPEndPoint(IPAddress.Parse(address), port);
+			//socket.Connect(IPAddress.Parse(address), port);
+			StartReceiving();            
         }
 
 		public void StartReceiving()
@@ -29,9 +42,9 @@ namespace UDPServer2._0
 				var aSyncArgs = new SocketAsyncEventArgs();
 				aSyncArgs.SetBuffer(new byte[bufferSize], 0, bufferSize);
 				aSyncArgs.RemoteEndPoint = remoteEP;
-				aSyncArgs.Completed += ASyncArgs_Completed;
+				aSyncArgs.Completed += ReceiveCompleted;
 
-				if(!client.ReceiveFromAsync(aSyncArgs))
+				if(!socket.ReceiveFromAsync(aSyncArgs))
 				{
 					Console.WriteLine("Faild");
 				}
@@ -41,14 +54,14 @@ namespace UDPServer2._0
 
 				Console.WriteLine("Faild" + e);
 			}
-
-			
-			
 		}
 
-		private void ASyncArgs_Completed(object sender, SocketAsyncEventArgs e)
+		private void ReceiveCompleted(object sender, SocketAsyncEventArgs e)
 		{
-			Console.WriteLine(e.Buffer);
+			var stream = new MemoryStream(e.Buffer);
+			var packet = MsgPack.Deserialize<Packet>(stream);
+
+			Console.WriteLine(packet.Test);
 		}
 
 		public void Send(string s)
@@ -59,16 +72,18 @@ namespace UDPServer2._0
 				aSyncArgs.RemoteEndPoint = remoteEP;
 
 				var stream = new MemoryStream();
-				var pack = new Packet();
-				pack.Test = s;
+				var pack = new Packet()
+				{
+					Test = s
+				};
 
-				MsgPack.Serialize(pack, stream, SerializationOptions.SuppressTypeInformation);
-
+				MsgPack.Serialize(pack, stream);
+				
 				var bytePack = stream.ToArray();
 				aSyncArgs.SetBuffer(bytePack, 0, bytePack.Length);
 
-				aSyncArgs.Completed += ASyncArgs_Completed1;
-				client.SendToAsync(aSyncArgs);
+				aSyncArgs.Completed += SendComplete;
+				socket.SendToAsync(aSyncArgs);
 			}
 			catch(Exception e)
 			{
@@ -76,9 +91,9 @@ namespace UDPServer2._0
 			}
 		}
 
-		private void ASyncArgs_Completed1(object sender, SocketAsyncEventArgs e)
+		private void SendComplete(object sender, SocketAsyncEventArgs e)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 	}
 }
