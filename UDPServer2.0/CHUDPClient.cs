@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace UDPServer2._0
+namespace CircleHard
 {
 	public class CHUDPClient
 	{

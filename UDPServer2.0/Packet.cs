@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace UDPServer2._0
+namespace CircleHard
 {
 	[DataContract]
 	public class Packet

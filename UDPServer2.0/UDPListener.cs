@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace UDPServer2._0
+namespace CircleHard
 {
 	public class UDPListener
 	{

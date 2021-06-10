@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UDPServer2._0
+namespace CircleHard
 {
 	class Program
 	{

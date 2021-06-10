@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>UDPServer2._0</RootNamespace>
+    <RootNamespace>CircleHard</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
